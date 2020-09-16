@@ -1,36 +1,36 @@
+# Importando as LIBs
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 import time
+from webdriver_manager.chrome import ChromeDriverManager
 
-class whatsappBoot:
-    def __init__(self):
-        # Simulando apanes uma mensagem
-        self.mensagem = "Bom dia Pessoal!" # Mensagens a ser enviada
-        self.grupos = ["Só Recapitulando :leaves::leaves:"] #Grupos/Contatos 
+# Navegando até o WhatsApp Web
+driver = webdriver.Chrome(ChromeDriverManager().install())
+driver.get("https://web.whatsapp.com/")
+print("\n Você tem 30s para scannear o QRcode. \n")
+time.sleep(30)
 
-        # Algumas config...
-        options = webdriver.ChromeOptions()
-        options.add_argument('lang=pt-br') #Adicionando um argumento para o objeto 'options'
-        self.driver = webdriver.Chrome(executable_path=r'./chromedriver.exe') # Caminho do WebDriver
-        
-    def EnviarMensagens(self):
-        self.driver.get("https://web.whatsapp.com")
-        time.sleep(40)
-        for grupo in self.grupos:
-            grupo = self.driver.find_element_by_xpath(f"//span[@title='{grupo}']")
-            time.sleep(3)
-            grupo.click()
-            
-            chat_box = self.driver.find_element_by_class_name('_1Plpp')
-            time.sleep(3)
-            chat_box.click()
-            
-            time.sleep(1)
-            chat_box.send_keys(self.mensagem)
-            
-            botao_enviar = self.driver.find_element_by_xpath('//span[@data-icon="send"]')
-            time.sleep(3)
-            botao_enviar.click()
-            time.sleep(5)
+# Definindo contatos/grupos e mensagem a ser enviada
+contatos = ['Só Recapitulando']
+mensagem = 'Robo aki.'
 
-bot = whatsappBoot()
-bot.EnviarMensagens()
+def buscar_contato(contato):
+    campo_pesquisa = driver.find_element_by_xpath('//div[contains(@class, "copyable-text-selectable-text")]')
+    time.sleep(3)
+    campo_pesquisa.click()
+    campo_pesquisa.send_keys(contato)
+    time.sleep(1)
+    campo_pesquisa.send_keys(Keys.ENTER)
+
+def enviar_mensagem(mensagem):
+    campo_mensagem = driver.find_elements_by_xpath('//div[contains(@class, "copyable-text-selectable-text")]')
+    campo_mensagem[1].click()
+    time.sleep(3)
+    campo_mensagem[1].send_keys(mensagem)
+    time.sleep(2)
+    campo_mensagem[1].send_keys(Keys.ENTER)
+
+for contato in contatos:
+    buscar_contato(contato)
+    enviar_mensagem(mensagem)
+
